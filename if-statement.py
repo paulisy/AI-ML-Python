@@ -5,9 +5,3 @@ if a > b:
 else:
     print("It cannot go!")
 
-    print("a is smaller")
-elif a == b:
-    print("a equals b")
-else:
-    print("a is larger")
-
