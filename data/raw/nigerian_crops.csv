@@ -1,0 +1,11 @@
+crop_name,min_temp,max_temp,optimal_rainfall,min_rainfall,max_rainfall,growing_days,planting_months,base_temp_gdd,soil_type,description
+Maize,18,35,600,500,800,90,"April,May,June,July",10,"loamy,sandy-loam","Staple food crop, drought-tolerant"
+Rice,20,37,1200,1000,2000,120,"May,June,July",10,"clay,loamy","High water requirement, flood-tolerant"
+Cassava,20,35,1000,800,1500,300,"March,April,May,June",12,"sandy,loamy,clay","Very hardy, drought-resistant"
+Yam,25,35,1200,1000,1500,240,"March,April,May",15,"loamy,sandy-loam",Important tuber crop
+Sorghum,15,40,450,350,700,100,"May,June,July",8,"sandy,loamy",Extremely drought-tolerant
+Millet,15,40,400,300,650,90,"May,June,July",8,"sandy,sandy-loam","Very drought-tolerant, good for arid regions"
+Groundnut,20,35,500,400,700,120,"April,May,June",10,"sandy,sandy-loam","Legume, nitrogen-fixing"
+Cowpea,20,35,500,400,700,75,"May,June,July",10,"sandy,loamy",Fast-growing legume
+Tomato,18,32,600,500,800,80,"March,April,August,September",10,"loamy,sandy-loam",High value vegetable crop
+Pepper,20,32,700,600,900,90,"March,April,August,September",12,"loamy,sandy-loam","High value, continuous harvest"
