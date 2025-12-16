@@ -49,6 +49,8 @@ def main():
                        help='Skip ML data preparation (use existing processed data)')
     parser.add_argument('--skip-training', action='store_true',
                        help='Skip model training')
+    parser.add_argument('--skip-evaluation', action='store_true',
+                       help='Skip model evaluation')
     parser.add_argument('--use-chunks', action='store_true',
                        help='Use date chunks for data collection')
     parser.add_argument('--epochs', type=int, default=50,
@@ -107,6 +109,13 @@ def main():
     else:
         print("\n⏭️  Skipping model training")
     
+    # Step 6: Model Evaluation
+    if success and not args.skip_evaluation:
+        cmd = "python scripts/evaluate_model.py"
+        success &= run_command(cmd, "Model Evaluation")
+    else:
+        print("\n⏭️  Skipping model evaluation")
+    
     # Final summary
     print("\n" + "=" * 80)
     if success:
@@ -121,7 +130,9 @@ def main():
             ("Engineered Features", "data/processed/weather_features.csv"),
             ("ML Training Data", "data/processed/X_train.npy"),
             ("Trained Model", "models/saved/rainfall_lstm_best.pth"),
-            ("Training History", "models/saved/training_history.pkl")
+            ("Training History", "models/saved/training_history.pkl"),
+            ("Evaluation Plots", "outputs/plots/model_evaluation.png"),
+            ("Evaluation Report", "outputs/reports/evaluation_report.txt")
         ]
         
         for name, path in artifacts:

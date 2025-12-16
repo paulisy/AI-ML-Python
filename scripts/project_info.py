@@ -71,7 +71,8 @@ def main():
         ("Data Cleaning", "scripts/clean_data.py"),
         ("Feature Engineering", "scripts/engineer_features.py"),
         ("ML Preparation", "scripts/prepare_ml_data.py"),
-        ("Model Training", "scripts/train_model.py")
+        ("Model Training", "scripts/train_model.py"),
+        ("Model Evaluation", "scripts/evaluate_model.py")
     ]
     
     for name, filepath in key_files:
@@ -121,6 +122,23 @@ def main():
     
     print()
     
+    # Evaluation outputs
+    print("📊 Evaluation Outputs:")
+    print("-" * 40)
+    eval_files = [
+        ("Evaluation Plots", "outputs/plots/model_evaluation.png"),
+        ("Error Analysis", "outputs/plots/error_analysis.png"),
+        ("Evaluation Report", "outputs/reports/evaluation_report.txt"),
+        ("Report Data", "outputs/reports/evaluation_report.pkl")
+    ]
+    
+    for name, filepath in eval_files:
+        status = check_file_exists(filepath)
+        size = get_file_size(filepath)
+        print(f"   {status} {name:<20} {filepath:<35} ({size})")
+    
+    print()
+    
     # Usage instructions
     print("🚀 Quick Start:")
     print("-" * 40)
@@ -139,6 +157,7 @@ def main():
     print("      python scripts/engineer_features.py")
     print("      python scripts/prepare_ml_data.py")
     print("      python scripts/train_model.py")
+    print("      python scripts/evaluate_model.py")
     print()
     
     # Module imports
@@ -146,7 +165,7 @@ def main():
     print("-" * 40)
     print("   from src.data.collectors import WeatherCollector")
     print("   from src.data.processors import WeatherDataCleaner, FeatureEngineer")
-    print("   from src.models import RainfallLSTM, ModelTrainer")
+    print("   from src.models import RainfallLSTM, ModelTrainer, ModelEvaluator")
     print("   from src.data.loaders import load_processed_data")
     print()
     

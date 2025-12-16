@@ -1,0 +1,18 @@
+======================================================================
+AGROWEATHER AI - MODEL EVALUATION REPORT
+======================================================================
+
+REGRESSION METRICS:
+  RMSE: 14.368 mm/day
+  MAE:  6.611 mm/day
+  R² Score: 0.053
+
+BASELINE COMPARISON:
+  Baseline RMSE: 14.760 mm
+  Model RMSE: 14.368 mm
+  Improvement: 2.7%
+
+CLASSIFICATION METRICS:
+  Accuracy: 56.4%
+  Precision: 53.9%
+  Recall: 99.6%
