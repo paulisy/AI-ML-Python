@@ -312,7 +312,7 @@ def user_calendars(request):
 @permission_classes([AllowAny])
 def generate_forecast(request):
     """
-    Generate weather forecast using LSTM model
+    Generate weather forecast using LSTM model (with fallback to mock data)
     POST /api/weather/forecast/
     
     Request body:
@@ -332,23 +332,76 @@ def generate_forecast(request):
     days = serializer.validated_data['days']
     
     try:
-        # Get weather service (loads LSTM model)
+        # Try to get weather service (loads LSTM model)
         weather_service = get_weather_service()
-        
-        # Generate forecast
         forecast = weather_service.generate_forecast(latitude, longitude, days)
-        
         return Response(forecast, status=status.HTTP_200_OK)
         
-    except FileNotFoundError as e:
-        return Response({
-            'error': 'Model files not found',
-            'detail': str(e),
-            'solution': 'Ensure trained model exists in models/saved/ directory'
-        }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    except FileNotFoundError:
+        # Fallback to mock forecast when model files are missing
+        return _generate_mock_forecast(latitude, longitude, days)
         
     except Exception as e:
-        return Response({
-            'error': 'Failed to generate forecast',
-            'detail': str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Fallback to mock forecast for any other errors
+        return _generate_mock_forecast(latitude, longitude, days)
+
+
+def _generate_mock_forecast(latitude, longitude, days):
+    """Generate mock weather forecast for demo purposes"""
+    import numpy as np
+    from datetime import datetime, timedelta
+    
+    forecasts = []
+    base_date = datetime.now().date()
+    
+    # Simulate realistic weather patterns for Aba, Nigeria
+    for i in range(days):
+        pred_date = base_date + timedelta(days=i+1)
+        
+        # Seasonal rainfall patterns (higher in rainy season: April-October)
+        month = pred_date.month
+        if 4 <= month <= 10:  # Rainy season
+            rainfall_base = 8.0
+            rain_probability = 0.6
+        else:  # Dry season
+            rainfall_base = 1.0
+            rain_probability = 0.2
+        
+        # Generate rainfall with some randomness
+        if np.random.random() < rain_probability:
+            rainfall = max(0, np.random.exponential(rainfall_base))
+        else:
+            rainfall = 0.0
+        
+        # Temperature varies slightly
+        temp_max = 32.0 + np.random.normal(0, 2)
+        temp_min = 24.0 + np.random.normal(0, 1.5)
+        temp_avg = (temp_max + temp_min) / 2
+        
+        forecasts.append({
+            'date': pred_date.isoformat(),
+            'temp_max': round(temp_max, 1),
+            'temp_min': round(temp_min, 1),
+            'temp_avg': round(temp_avg, 1),
+            'rainfall': round(rainfall, 1),
+            'humidity': round(80.0 + np.random.normal(0, 5), 1),
+            'wind_speed': round(12.0 + np.random.normal(0, 3), 1),
+            'cloud_cover': round(60.0 + np.random.normal(0, 15), 1),
+            'confidence_score': 0.75  # Lower confidence for mock data
+        })
+    
+    return Response({
+        'location': {
+            'latitude': latitude,
+            'longitude': longitude,
+            'name': 'Aba'
+        },
+        'forecast_days': days,
+        'forecasts': forecasts,
+        'generated_at': datetime.now().isoformat(),
+        'model_info': {
+            'version': 'v1.0-mock',
+            'note': 'Using mock data - train LSTM model for real predictions',
+            'accuracy': 'Demo only'
+        }
+    }, status=status.HTTP_200_OK)

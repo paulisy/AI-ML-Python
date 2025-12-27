@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroWeather AI - API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c5530;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .section h2 {
+            color: #4a7c59;
+            margin-top: 0;
+        }
+        button {
+            background-color: #4a7c59;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2c5530;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .result {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 AgroWeather AI - API Test Interface</h1>
+        
+        <!-- Health Check -->
+        <div class="section">
+            <h2>🏥 Health Check</h2>
+            <button onclick="testHealthCheck()">Test Health Check</button>
+            <div id="health-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Crops List -->
+        <div class="section">
+            <h2>🌱 Available Crops</h2>
+            <button onclick="testCropsList()">Get Crops List</button>
+            <div id="crops-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Planting Calendar -->
+        <div class="section">
+            <h2>📅 Planting Calendar Generator</h2>
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label for="crop-select">Crop:</label>
+                        <select id="crop-select">
+                            <option value="maize">Maize</option>
+                            <option value="rice">Rice</option>
+                            <option value="cassava">Cassava</option>
+                            <option value="yam">Yam</option>
+                            <option value="cowpea">Cowpea</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="planting-date">Planting Date:</label>
+                        <input type="date" id="planting-date" value="2025-05-05">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label for="latitude">Latitude:</label>
+                        <input type="number" id="latitude" value="5.1156" step="0.0001">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude:</label>
+                        <input type="number" id="longitude" value="7.3636" step="0.0001">
+                    </div>
+                </div>
+            </div>
+            <button onclick="testPlantingCalendar()">Generate Planting Calendar</button>
+            <div id="calendar-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Weather Forecast -->
+        <div class="section">
+            <h2>🌤️ Weather Forecast</h2>
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label for="forecast-lat">Latitude:</label>
+                        <input type="number" id="forecast-lat" value="5.1156" step="0.0001">
+                    </div>
+                    <div class="form-group">
+                        <label for="forecast-lon">Longitude:</label>
+                        <input type="number" id="forecast-lon" value="7.3636" step="0.0001">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label for="forecast-days">Days:</label>
+                        <input type="number" id="forecast-days" value="7" min="1" max="14">
+                    </div>
+                </div>
+            </div>
+            <button onclick="testWeatherForecast()">Generate Weather Forecast</button>
+            <div id="forecast-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await fetch(`${API_BASE}/health/`);
+                const data = await response.json();
+                showResult('health-result', data);
+            } catch (error) {
+                showResult('health-result', { error: error.message }, true);
+            }
+        }
+
+        async function testCropsList() {
+            try {
+                const response = await fetch(`${API_BASE}/crops/`);
+                const data = await response.json();
+                showResult('crops-result', data);
+            } catch (error) {
+                showResult('crops-result', { error: error.message }, true);
+            }
+        }
+
+        async function testPlantingCalendar() {
+            try {
+                const requestData = {
+                    crop_name: document.getElementById('crop-select').value,
+                    planting_date: document.getElementById('planting-date').value,
+                    latitude: parseFloat(document.getElementById('latitude').value),
+                    longitude: parseFloat(document.getElementById('longitude').value)
+                };
+
+                const response = await fetch(`${API_BASE}/planting/calendar/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+                showResult('calendar-result', data, !response.ok);
+            } catch (error) {
+                showResult('calendar-result', { error: error.message }, true);
+            }
+        }
+
+        async function testWeatherForecast() {
+            try {
+                const requestData = {
+                    latitude: parseFloat(document.getElementById('forecast-lat').value),
+                    longitude: parseFloat(document.getElementById('forecast-lon').value),
+                    days: parseInt(document.getElementById('forecast-days').value)
+                };
+
+                const response = await fetch(`${API_BASE}/weather/forecast/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+                showResult('forecast-result', data, !response.ok);
+            } catch (error) {
+                showResult('forecast-result', { error: error.message }, true);
+            }
+        }
+
+        // Auto-load health check on page load
+        window.onload = function() {
+            testHealthCheck();
+        };
+    </script>
+</body>
+</html>
