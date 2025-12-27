@@ -1,0 +1,11 @@
+x = "functioning"
+print(x.find('n'))
+print(x[1:5])
+print(x[1:8])
+print(x[1:])
+print(x[:-1])
+print(x[-7:-3])
+print(x.upper())
+print(x.lower())
+print(x.title())
+print(x.replace('f', 'D'))
